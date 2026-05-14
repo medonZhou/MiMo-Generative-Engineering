@@ -1,0 +1,22 @@
+from pydantic import BaseModel, Field
+from typing import List, Optional
+
+class CADAssemblyData(BaseModel):
+    """
+    统一装配体数据模型
+    规范：所有多零件装配体必须保存为单一 STP 文件 (Single STP File) 以确保跨平台兼容与数据防丢。
+    """
+    assembly_id: str = Field(..., description="装配体唯一标识，例如：77GHz_Radar_Housing")
+    stp_file_hash: str = Field(..., description="单一 STP 文件的 SHA256 哈希值")
+    part_count: int = Field(..., ge=1)
+    material_specs: dict = Field(..., description="各部件材质映射字典，如 {'radome': 'PBT-GF30'}")
+
+class ThermalConstraint(BaseModel):
+    max_junction_temp_c: float = Field(125.0, description="最大结温")
+    ambient_temp_profile: str = Field("AEC-Q100_Grade_1", description="车规环境温度曲线")
+
+class EngineeringReport(BaseModel):
+    status: str
+    token_consumed: int
+    optimization_proposals: List[str]
+    stp_revision_required: bool
